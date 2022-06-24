@@ -28,13 +28,13 @@ app.get('/', (req, res) => {
 
 app.post('/auth/login', (req, res) => {
   const { username, password } = req.body;
-
+  console.log(username, password)
   if (username === user.username && password === user.password) {
     console.log('hey')
-    return res.sendStatus(200)
+    return res.send({ username })
   }
 
-  res.sendStatus(403);
+  res.send({ status: 403 });
 })
 
 // app.get('auth/signup', (req, res) => {
