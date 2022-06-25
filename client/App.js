@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
+import ButtonBase from './src/components/ui/ButtonBase';
+import Home from './src/screens/Home';
 import Login from './src/screens/Login';
 
 const App = () => {
   const [user, setUser] = useState(null);
 
   return (
-    <View style={styles.container}>
-      {user ? (
-        <Text>Welcome {user.username} </Text>
-      ) : (
-        <Login setUser={setUser} />
-      )}
-    </View>
+    <SafeAreaView>
+      <View style={styles.container}>
+        {user ? <Home setUser={setUser} user={user} /> : <Login setUser={setUser} />}
+      </View>
+    </SafeAreaView>
   );
 };
 
