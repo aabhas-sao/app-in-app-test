@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  Text,
-  StyleSheet,
-  Image,
-  Button,
-  TouchableOpacity,
-} from 'react-native';
+import { View, TextInput, Text, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
@@ -39,8 +31,7 @@ const Login = ({ setUser }) => {
 
   return (
     <View sytle={styles.container}>
-      <View
-        style={{ width: 100, height: 100, alignSelf: 'center', marginTop: 12 }}>
+      <View style={{ width: 100, height: 100, alignSelf: 'center', marginTop: 12 }}>
         <Image
           source={{
             uri: 'https://images.unsplash.com/photo-1536051424396-06f39b8fa1b4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80',
@@ -49,25 +40,14 @@ const Login = ({ setUser }) => {
         />
       </View>
 
-      <Text style={{ fontSize: 24, textAlign: 'center', marginTop: 12 }}>
-        {' '}
-        Welcome Back{' '}
-      </Text>
+      <Text style={{ fontSize: 24, textAlign: 'center', marginTop: 12 }}> Welcome Back </Text>
       <View style={styles.formGroup}>
         <Text style={styles.label}>Enter your email</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setEmail}
-          autoCapitalize={false}
-        />
+        <TextInput style={styles.input} onChangeText={setEmail} autoCapitalize={false} />
       </View>
       <View style={styles.formGroup}>
         <Text style={styles.label}>Enter your Password</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+        <TextInput style={styles.input} onChangeText={setPassword} secureTextEntry />
       </View>
       <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
         <Text style={{ color: '#eee', textAlign: 'center' }}>Login</Text>
