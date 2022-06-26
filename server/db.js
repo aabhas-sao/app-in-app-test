@@ -1,6 +1,6 @@
 const user = {
-  username: 'root',
-  password: '123456'
-}
+  username: "root",
+  password: "123456",
+};
 
-export default user;
+module.exports = user;
