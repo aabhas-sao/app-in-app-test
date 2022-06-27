@@ -7,13 +7,13 @@ const authenticate = async (email, password) => {
     const isAuthenticated = await argon2.verify(user.hash, password);
 
     if (isAuthenticated) {
-      return SUCCESS;
+      return { message: SUCCESS, user };
     }
 
-    return INCORRECT_PASSWORD;
+    return { message: INCORRECT_PASSWORD };
   }
 
-  return EMAIL_NOT_FOUND;
+  return { message: EMAIL_NOT_FOUND };
 };
 
 module.exports = authenticate;
