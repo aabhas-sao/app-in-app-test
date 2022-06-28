@@ -2,10 +2,21 @@ const router = require("express").Router();
 const User = require("../../models/user");
 const authenticate = require("../../utils/authenticate");
 const jwt = require("jsonwebtoken");
+const checkOAUTH2Client = require("../../utils/checkOAUTH2Client");
+const { SUCCESS, EMAIL_NOT_FOUND } = require("../../constants");
 
 const LOGIN_URI = "http://localhost:3001";
 
+// integrate redis for cache later
 const redis = {};
+const clients = [
+  {
+    client_id: "fasdlfdhsldfkdflss13jf",
+    client_secret: "4283jdfasfdjdsj399",
+    client_name: "Scenes",
+    redirect_uri: "http://google.com",
+  },
+];
 
 router.get("/oauth2/authorize", (req, res) => {
   const { response_type, client_id, redirect_uri } = req.query;
@@ -19,21 +30,39 @@ router.post("/oauth2/token", (req, res) => {
   const { grant_type, client_id, client_secret, code, redirect_uri } = req.body;
 
   // verify client_id and client_secret and code
+  const isValidOAUTH2Client = checkOAUTH2Client(
+    clients,
+    client_id,
+    client_secret,
+    redirect_uri
+  );
+
+  console.log(isValidOAUTH2Client);
+  console.log(redis[code]);
+
+  console.log("client_id", redis[code].client_id === client_id, client_id);
+  console.log(
+    "redirect_uri",
+    redis[code].redirect_uri === redirect_uri,
+    redirect_uri
+  );
+  console.log("grant_type", grant_type === "authorization_code", grant_type);
+
   if (
+    isValidOAUTH2Client &&
     redis[code].client_id === client_id &&
-    redis[code].client_secret === client_secret &&
     redis[code].redirect_uri === redirect_uri &&
-    grant_type === "access_token"
+    grant_type === "authorization_code"
   ) {
     // create an access token for the uid
     // send a response
 
-    const { email, uid } = redis[code];
-    token = jwt.sign({ userId: uid, email }, process.env.TOKEN_KEY, {
+    const { uid } = redis[code];
+    token = jwt.sign({ userId: uid }, process.env.TOKEN_KEY, {
       expiresIn: "2h",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       access_token: token,
     });
   }
@@ -42,6 +71,7 @@ router.post("/oauth2/token", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
+  const { response_type, client_id, redirect_uri } = req.query;
   const { email, first_name, last_name, password } = req.body;
   const hash = await argon2.hash(password);
 
@@ -72,17 +102,23 @@ router.post("/register", async (req, res) => {
     lastName,
   };
 
+  if (redirect_uri && client_id && response_type === "code") {
+    return res.redirect(
+      `${LOGIN_URI}/?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}`
+    );
+  }
+
   res.status(200).json(data);
 });
 
 router.post("/login", async (req, res) => {
   const { client_id, response_type, redirect_uri } = req.query;
-
+  const { email, password } = req.body;
   const isAuthenticated = await authenticate(email, password);
+  console.log(isAuthenticated);
   const user = isAuthenticated.user;
-
   if (isAuthenticated.message === EMAIL_NOT_FOUND) {
-    res.status(403).json({ message: "email not found" });
+    return res.status(403).json({ message: "email not found" });
   }
 
   if (client_id && response_type && redirect_uri) {
@@ -99,13 +135,12 @@ router.post("/login", async (req, res) => {
         client_id,
         uid: user?._id,
         redirect_uri,
-        email,
       };
 
+      console.log("login", redis[code]);
+
       if (isAuthenticated.message === SUCCESS) {
-        return res.redirect(
-          `${redirect_uri}?code=${code}&client_id=${client_id}`
-        );
+        return res.redirect(`${redirect_uri}?code=${code}`);
       }
 
       return res.status(401).json({ message: "invalid credentials" });
