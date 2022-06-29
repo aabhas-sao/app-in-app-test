@@ -114,9 +114,12 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { client_id, response_type, redirect_uri } = req.query;
   const { email, password } = req.body;
+
   const isAuthenticated = await authenticate(email, password);
-  console.log(isAuthenticated);
+
+  // console.log(isAuthenticated);
   const user = isAuthenticated.user;
+
   if (isAuthenticated.message === EMAIL_NOT_FOUND) {
     return res.status(403).json({ message: "email not found" });
   }

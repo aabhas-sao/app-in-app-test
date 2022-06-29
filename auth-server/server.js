@@ -3,14 +3,12 @@ const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const authRouter = require("./routes/auth/");
-const authenticate = require("./utils/authenticate");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.set("view engine", "hbs");
 
 const PORT = process.env.PORT || 3000;
 
