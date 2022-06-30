@@ -38,6 +38,7 @@ router.post("/oauth2/token", (req, res) => {
     redirect_uri
   );
 
+  console.log("inside token endpoint", client_secret);
   console.log(isValidOAUTH2Client);
   console.log(redis[code]);
 
