@@ -13,7 +13,7 @@ const Login = () => {
 
     const { client_id, redirect_uri, response_type } = parsed;
     const res = await axios.post(
-      `http://localhost:3000/auth/login/?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}`,
+      `https://custom-sso.herokuapp.com/auth/login/?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}`,
       {
         email,
         password,
