@@ -4,8 +4,9 @@ const authenticate = require("../../utils/authenticate");
 const jwt = require("jsonwebtoken");
 const checkOAUTH2Client = require("../../utils/checkOAUTH2Client");
 const { SUCCESS, EMAIL_NOT_FOUND } = require("../../constants");
+const argon2 = require("argon2");
 
-const LOGIN_URI = "http://localhost:3001";
+const LOGIN_URI = process.env.LOGIN_URI;
 
 // integrate redis for cache later
 const redis = {};
@@ -14,7 +15,7 @@ const clients = [
     client_id: "fasdlfdhsldfkdflss13jf",
     client_secret: "4283jdfasfdjdsj399",
     client_name: "Scenes",
-    redirect_uri: "http://google.com",
+    redirect_uri: process.env.REDIRECT_URI,
   },
 ];
 
@@ -40,18 +41,20 @@ router.post("/oauth2/token", (req, res) => {
   console.log(isValidOAUTH2Client);
   console.log(redis[code]);
 
-  console.log("client_id", redis[code].client_id === client_id, client_id);
-  console.log(
-    "redirect_uri",
-    redis[code].redirect_uri === redirect_uri,
-    redirect_uri
-  );
-  console.log("grant_type", grant_type === "authorization_code", grant_type);
+  if (client_id && redirect_uri) {
+    console.log("client_id", redis[code]?.client_id === client_id, client_id);
+    console.log(
+      "redirect_uri",
+      redis[code]?.redirect_uri === redirect_uri,
+      redirect_uri
+    );
+    console.log("grant_type", grant_type === "authorization_code", grant_type);
+  }
 
   if (
     isValidOAUTH2Client &&
-    redis[code].client_id === client_id &&
-    redis[code].redirect_uri === redirect_uri &&
+    redis[code]?.client_id === client_id &&
+    redis[code]?.redirect_uri === redirect_uri &&
     grant_type === "authorization_code"
   ) {
     // create an access token for the uid
@@ -112,7 +115,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { client_id, response_type, redirect_uri } = req.query;
+  const { client_id, response_type, redirect_uri } = req?.query;
   const { email, password } = req.body;
 
   const isAuthenticated = await authenticate(email, password);
@@ -140,6 +143,7 @@ router.post("/login", async (req, res) => {
         redirect_uri,
       };
 
+      console.log("!!!!");
       console.log("login", redis[code]);
 
       if (isAuthenticated.message === SUCCESS) {
