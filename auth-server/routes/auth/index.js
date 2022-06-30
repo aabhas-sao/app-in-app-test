@@ -147,7 +147,9 @@ router.post("/login", async (req, res) => {
       console.log("login", redis[code]);
 
       if (isAuthenticated.message === SUCCESS) {
-        return res.redirect(`${redirect_uri}?code=${code}`);
+        return res
+          .status(200)
+          .json({ url: `${process.env.REDIRECT_URI}?code=${code}` });
       }
 
       return res.status(401).json({ message: "invalid credentials" });

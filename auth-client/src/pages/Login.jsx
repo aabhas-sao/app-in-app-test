@@ -12,14 +12,16 @@ const Login = () => {
     e.preventDefault();
 
     const { client_id, redirect_uri, response_type } = parsed;
+    console.log(client_id, redirect_uri, response_type);
     const res = await axios.post(
-      `https://custom-sso.herokuapp.com/auth/login/?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}`,
+      `http://localhost:3000/auth/login/?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}`,
       {
         email,
         password,
       }
     );
-    console.log(res);
+    console.log(res.data);
+    window.location.assign(res.data.url);
   };
 
   return (
