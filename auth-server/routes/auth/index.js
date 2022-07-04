@@ -28,13 +28,17 @@ router.get("/oauth2/authorize", (req, res) => {
 });
 
 router.post("/oauth2/token", (req, res) => {
-  const { grant_type, client_id, client_secret, code, redirect_uri } = req.body;
+  const { grant_type, client_id, code, redirect_uri } = req.body;
+  const basicToken = req.headers["authorization"].split(" ")[1];
 
+  var b = Buffer.from(basicToken, "base64");
+  var clientSecret = b.toString();
+  console.log(clientSecret);
   // verify client_id and client_secret and code
   const isValidOAUTH2Client = checkOAUTH2Client(
     clients,
     client_id,
-    client_secret,
+    clientSecret,
     redirect_uri
   );
 
