@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
 import ButtonBase from '../components/ui/ButtonBase';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
@@ -8,22 +9,32 @@ const Login = ({ setUser }) => {
 
   const handleLogin = async () => {
     console.log(email, password);
+    const clientID = 'fasdlfdhsldfkdflss13jf';
+    const redirectURI = 'https://edit-with-rahul-community.avalonmeta.com/oauth2/callback';
     try {
-      let res = await fetch('http://10.0.2.2:3000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          username: email,
-          password: password,
-        }),
-      });
+      console.log(
+        `http://10.0.2.2:3000/auth/login?client_id=${clientID}&redirect_uri=${redirectURI}&response_type=code`
+      );
+      let res = await fetch(
+        `http://10.0.2.2:3000/auth/login?client_id=${clientID}&redirect_uri=${redirectURI}&response_type=code`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
 
       if (res.status === 200) {
-        const user = await res.json();
-        setUser(user);
+        const { code } = await res.json();
+        console.log(code);
+        await AsyncStorage.setItem('code', code);
+        setUser({ name: 'dummy' });
       }
     } catch (e) {
       console.log(e);
