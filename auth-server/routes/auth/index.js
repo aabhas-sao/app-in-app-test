@@ -5,11 +5,10 @@ const jwt = require("jsonwebtoken");
 const checkOAUTH2Client = require("../../utils/checkOAUTH2Client");
 const { SUCCESS, EMAIL_NOT_FOUND } = require("../../constants");
 const argon2 = require("argon2");
+const { nanoid } = require("nanoid");
+const { cache } = require("../../initCache");
 
 const LOGIN_URI = process.env.LOGIN_URI;
-
-// integrate redis for cache later
-const redis = {};
 
 router.get("/oauth2/authorize", (req, res) => {
   const { response_type, client_id, redirect_uri } = req.query;
@@ -36,9 +35,12 @@ router.post("/oauth2/token", async (req, res) => {
     redirect_uri
   );
 
+  console.log(code);
+  const clientDetails = cache.get(code);
+
   console.log("inside token endpoint", client_secret);
   console.log(isValidOAUTH2Client);
-  console.log(redis[code]);
+  console.log(clientDetails);
 
   // if (client_id && redirect_uri) {
   //   console.log("client_id", redis[code]?.client_id === client_id, client_id);
@@ -52,14 +54,14 @@ router.post("/oauth2/token", async (req, res) => {
 
   if (
     isValidOAUTH2Client &&
-    redis[code]?.client_id === client_id &&
-    redis[code]?.redirect_uri === redirect_uri &&
+    clientDetails?.client_id === client_id &&
+    clientDetails?.redirect_uri === redirect_uri &&
     grant_type === "authorization_code"
   ) {
     // create an access token for the uid
     // send a response
 
-    const { uid } = redis[code];
+    const { uid } = clientDetails;
     // todo: add hostName in jwt field
     token = jwt.sign({ userId: uid }, process.env.TOKEN_KEY, {
       expiresIn: "2h",
@@ -129,7 +131,7 @@ router.post("/login", async (req, res) => {
 
   if (client_id && response_type && redirect_uri) {
     if (response_type === "code") {
-      let code = "DUMMYCODE123";
+      let code = nanoid(10);
 
       // generate a unique code and store it in cache
       // code : {
@@ -137,14 +139,13 @@ router.post("/login", async (req, res) => {
       //    email or uid,
       // }
       // use random uid generator later and redis
-      redis[code] = {
+      cache.set(code, {
         client_id,
-        uid: user?._id,
+        uid: user?._id.toString(),
         redirect_uri,
-      };
+      });
 
       console.log("!!!!");
-      console.log("login", redis[code]);
 
       if (isAuthenticated.message === SUCCESS) {
         return res
