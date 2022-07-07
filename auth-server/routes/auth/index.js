@@ -10,14 +10,6 @@ const LOGIN_URI = process.env.LOGIN_URI;
 
 // integrate redis for cache later
 const redis = {};
-const clients = [
-  {
-    client_id: "fasdlfdhsldfkdflss13jf",
-    client_secret: "4283jdfasfdjdsj399",
-    client_name: "Scenes",
-    redirect_uri: process.env.REDIRECT_URI,
-  },
-];
 
 router.get("/oauth2/authorize", (req, res) => {
   const { response_type, client_id, redirect_uri } = req.query;
@@ -27,7 +19,7 @@ router.get("/oauth2/authorize", (req, res) => {
   );
 });
 
-router.post("/oauth2/token", (req, res) => {
+router.post("/oauth2/token", async (req, res) => {
   const { grant_type, code, redirect_uri } = req.body;
   const basicToken = req.headers["authorization"].split(" ")[1];
   var b = Buffer.from(basicToken, "base64");
@@ -38,8 +30,7 @@ router.post("/oauth2/token", (req, res) => {
 
   console.log(client_secret);
   // verify client_id and client_secret and code
-  const isValidOAUTH2Client = checkOAUTH2Client(
-    clients,
+  const isValidOAUTH2Client = await checkOAUTH2Client(
     client_id,
     client_secret,
     redirect_uri
@@ -49,15 +40,15 @@ router.post("/oauth2/token", (req, res) => {
   console.log(isValidOAUTH2Client);
   console.log(redis[code]);
 
-  if (client_id && redirect_uri) {
-    console.log("client_id", redis[code]?.client_id === client_id, client_id);
-    console.log(
-      "redirect_uri",
-      redis[code]?.redirect_uri === redirect_uri,
-      redirect_uri
-    );
-    console.log("grant_type", grant_type === "authorization_code", grant_type);
-  }
+  // if (client_id && redirect_uri) {
+  //   console.log("client_id", redis[code]?.client_id === client_id, client_id);
+  //   console.log(
+  //     "redirect_uri",
+  //     redis[code]?.redirect_uri === redirect_uri,
+  //     redirect_uri
+  //   );
+  //   console.log("grant_type", grant_type === "authorization_code", grant_type);
+  // }
 
   if (
     isValidOAUTH2Client &&
@@ -69,6 +60,7 @@ router.post("/oauth2/token", (req, res) => {
     // send a response
 
     const { uid } = redis[code];
+    // todo: add hostName in jwt field
     token = jwt.sign({ userId: uid }, process.env.TOKEN_KEY, {
       expiresIn: "2h",
     });

@@ -1,23 +1,22 @@
-const checkOAUTH2Client = (clients, client_id, client_secret, redirect_uri) => {
-  for (let i = 0; i < clients.length; i++) {
-    const client = clients[i];
+const Oauth2Client = require("../models/oauth2Client");
 
-    console.log("Testing checkOAUTH2Client");
-    console.log(client.client_id, client_id);
-    console.log(client.client_secret, client_secret);
-    console.log(client.redirect_uri, redirect_uri);
-    console.log("!!!");
+const checkOAUTH2Client = async (client_id, client_secret, redirect_uri) => {
+  try {
+    const client = await Oauth2Client.findOne({ clientId: client_id }).exec();
 
     if (
-      client.client_id === client_id &&
-      client.client_secret === client_secret &&
-      client.redirect_uri === redirect_uri
+      client.clientId === client_id &&
+      client.clientSecret === client_secret &&
+      client.redirectURI === redirect_uri
     ) {
       return true;
     }
-  }
 
-  return false;
+    return false;
+  } catch (e) {
+    console.log("error fetching client");
+    return false;
+  }
 };
 
 module.exports = checkOAUTH2Client;
