@@ -22,6 +22,7 @@ router.post("/oauth2/token", async (req, res) => {
   console.log("req.query", req.query);
   const codeQuery = req.query.code;
   console.log("codeQuery", codeQuery);
+  console.log(req.body)
   const { grant_type, code, access_token, redirect_uri } = req.body;
   const basicToken = req.headers["authorization"].split(" ")[1];
   console.log("basicToken", basicToken);
