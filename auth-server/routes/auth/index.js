@@ -24,6 +24,7 @@ router.post("/oauth2/token", async (req, res) => {
   console.log("basicToken", basicToken);
   var b = Buffer.from(basicToken, "base64");
   var decodedString = b.toString();
+  console.log(decodedString)
   const authString = decodedString.split(":");
   const client_id = authString[0];
   const client_secret = authString[1];
