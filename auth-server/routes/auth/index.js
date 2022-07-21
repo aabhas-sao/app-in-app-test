@@ -32,17 +32,19 @@ router.post("/oauth2/token", async (req, res) => {
   const authString = decodedString.split(":");
   const client_id = authString[0];
   const client_secret = authString[1];
-
+  
   // verify client_id and client_secret and code
+  const clientDetails = cache.get(code);
+  
   const isValidOAUTH2Client = await checkOAUTH2Client(
     client_id,
     client_secret,
-    redirect_uri
+    redirect_uri,
+    clientDetails
   );
 
   console.log("code", code);
   console.log("access_token", access_token);
-  const clientDetails = cache.get(code);
 
   console.log("inside token endpoint", client_secret);
   console.log("isValidOAUTH2Client", isValidOAUTH2Client);
@@ -50,8 +52,6 @@ router.post("/oauth2/token", async (req, res) => {
 
   if (
     isValidOAUTH2Client &&
-    clientDetails?.client_id === client_id &&
-    clientDetails?.redirect_uri === redirect_uri &&
     grant_type === "authorization_code"
   ) {
     // create an access token for the uid
