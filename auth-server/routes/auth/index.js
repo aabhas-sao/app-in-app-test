@@ -19,7 +19,7 @@ router.get("/oauth2/authorize", (req, res) => {
 });
 
 router.post("/oauth2/token", async (req, res) => {
-  const { grant_type, code, redirect_uri } = req.body;
+  const { grant_type, code, access_token, redirect_uri } = req.body;
   const basicToken = req.headers["authorization"].split(" ")[1];
   var b = Buffer.from(basicToken, "base64");
   var decodedString = b.toString();
@@ -27,7 +27,6 @@ router.post("/oauth2/token", async (req, res) => {
   const client_id = authString[0];
   const client_secret = authString[1];
 
-  console.log(client_secret);
   // verify client_id and client_secret and code
   const isValidOAUTH2Client = await checkOAUTH2Client(
     client_id,
@@ -35,12 +34,13 @@ router.post("/oauth2/token", async (req, res) => {
     redirect_uri
   );
 
-  console.log(code);
+  console.log("code", code);
+  console.log("access_token", access_token);
   const clientDetails = cache.get(code);
 
   console.log("inside token endpoint", client_secret);
-  console.log(isValidOAUTH2Client);
-  console.log(clientDetails);
+  console.log("isValidOAUTH2Client", isValidOAUTH2Client);
+  console.log("clientDetails", clientDetails);
 
   // if (client_id && redirect_uri) {
   //   console.log("client_id", redis[code]?.client_id === client_id, client_id);
