@@ -19,6 +19,9 @@ router.get("/oauth2/authorize", (req, res) => {
 });
 
 router.post("/oauth2/token", async (req, res) => {
+  console.log("req.query", req.query);
+  const codeQuery = req.query.code;
+  console.log("codeQuery", codeQuery);
   const { grant_type, code, access_token, redirect_uri } = req.body;
   const basicToken = req.headers["authorization"].split(" ")[1];
   console.log("basicToken", basicToken);
@@ -43,16 +46,6 @@ router.post("/oauth2/token", async (req, res) => {
   console.log("inside token endpoint", client_secret);
   console.log("isValidOAUTH2Client", isValidOAUTH2Client);
   console.log("clientDetails", clientDetails);
-
-  // if (client_id && redirect_uri) {
-  //   console.log("client_id", redis[code]?.client_id === client_id, client_id);
-  //   console.log(
-  //     "redirect_uri",
-  //     redis[code]?.redirect_uri === redirect_uri,
-  //     redirect_uri
-  //   );
-  //   console.log("grant_type", grant_type === "authorization_code", grant_type);
-  // }
 
   if (
     isValidOAUTH2Client &&
