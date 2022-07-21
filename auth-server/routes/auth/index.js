@@ -36,6 +36,7 @@ router.post("/oauth2/token", async (req, res) => {
   // verify client_id and client_secret and code
   const clientDetails = cache.get(code);
   
+  
   const isValidOAUTH2Client = await checkOAUTH2Client(
     client_id,
     client_secret,
