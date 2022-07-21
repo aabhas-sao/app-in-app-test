@@ -21,6 +21,7 @@ router.get("/oauth2/authorize", (req, res) => {
 router.post("/oauth2/token", async (req, res) => {
   const { grant_type, code, access_token, redirect_uri } = req.body;
   const basicToken = req.headers["authorization"].split(" ")[1];
+  console.log("basicToken", basicToken);
   var b = Buffer.from(basicToken, "base64");
   var decodedString = b.toString();
   const authString = decodedString.split(":");
