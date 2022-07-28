@@ -25,6 +25,7 @@ const checkOAUTH2Client = async (
     ];
 
     console.log("Checks", checks)
+    console.log(clientDetailsCache.client_id, client_id)
 
     if (!checks.includes(false)) {
       return true;
