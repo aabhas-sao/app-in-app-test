@@ -11,6 +11,7 @@ const checkOAUTH2Client = async (
     const client = await Oauth2Client.findOne({ clientId: client_id }).exec();
 
     if (!client) {
+      console.log("client not found")
       return false;
     }
 
@@ -22,6 +23,8 @@ const checkOAUTH2Client = async (
       client.redirectURI === redirect_uri,
       clientDetailsCache?.client_id === client_id
     ];
+
+    console.log("Checks", checks)
 
     if (!checks.includes(false)) {
       return true;
