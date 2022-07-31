@@ -15,12 +15,10 @@ const checkOAUTH2Client = async (
       return false;
     }
 
-    clientDetailsCache?.redirect_uri === redirect_uri;
-
     const checks = [
       client.clientId === client_id,
       client.clientSecret === client_secret,
-      client.redirectURI === redirect_uri,
+      // client.redirectURI === redirect_uri,
       clientDetailsCache?.client_id === client_id
     ];
 
