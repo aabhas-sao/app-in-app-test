@@ -115,6 +115,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { client_id, response_type, redirect_uri } = req?.query;
   const { email, password } = req.body;
+  console.log(email, password)
 
   const isAuthenticated = await authenticate(email, password);
 
@@ -142,7 +143,7 @@ router.post("/login", async (req, res) => {
       if (isAuthenticated.message === SUCCESS) {
         return res
           .status(200)
-          .json({ url: `${redirect_uri}?code=${code}`, code });
+          .json({ url: `${redirect_uri}?code=${code}`, code, });
       }
 
       return res.status(401).json({ message: "invalid credentials" });
